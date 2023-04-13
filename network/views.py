@@ -6,13 +6,19 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+
 import json
 
 from .models import User,Post
 
 def index(request):
-    posts=Post.objects.all().order_by("-id")
-    return render(request, "network/index.html",{"posts":posts})
+    posts=Post.objects.all().order_by("-id");
+    paginator=Paginator(posts,5);
+    page_number=request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "network/index.html",{"page_obj":page_obj})
 
 
 def login_view(request):
@@ -74,10 +80,22 @@ def post(request):
     
     data=json.loads(request.body);
     content=data.get("content","");
+    postId=data.get("id","");
+
+    if postId != '':
+        post=Post.objects.get(id=postId);
+        post.content=content
+        post.save()
+        return JsonResponse({"message": "OK"}, status=201)
+
+
+       
+
 
     if content == '':
          return JsonResponse({"error": "POST request required."}, status=400)
     
+
     new=Post(user=request.user,content=content)
     new.save()
 
@@ -104,3 +122,7 @@ def like(request):
 
     return JsonResponse({"status": user_has_liked}, status=201)
 
+
+def listing(request):
+    pass
+    

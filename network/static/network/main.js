@@ -1,14 +1,23 @@
 
 document.addEventListener('DOMContentLoaded',()=>{
     document.querySelector('#newPost').addEventListener('submit',createPost);
-   document.querySelectorAll('.icon').forEach(i=> i.addEventListener('click',function(){like(i)}))
+    document.querySelectorAll('.icon').forEach(i=> i.addEventListener('click',function(){like(i)}))
+    const exampleModal = document.getElementById('exampleModal');
+    if(exampleModal){
+      exampleModal.addEventListener('show.bs.modal',edit )
+       
+    }
+    
 })
 
 function createPost(e){
     e.preventDefault()
    content=document.querySelector('#postContent')
-   btn=document.querySelector('#submitBtn').disabled=true
-   
+    btn=document.querySelector('#submitBtn').disabled=true
+ 
+   const id=document.querySelector('#modalId').value;
+ 
+
 
   if(content.value == ''){
     content.classList.add('border-danger');
@@ -20,7 +29,7 @@ function createPost(e){
 
   fetch('/post',{
     method:'POST',
-    body:JSON.stringify({content:content.value})
+    body:JSON.stringify({content:content.value,id:id})
   })
   .then(response=>response.json())
   .then(message=>{
@@ -30,14 +39,14 @@ function createPost(e){
     }
     
     window.location.reload();
-    
+     
   })
   
 }
 
 function like(i){
     let counter= i.previousElementSibling
-    console.log(counter);
+    
 
   if(i.classList.contains("fa-regular")){
     i.classList.remove("fa-regular")
@@ -61,4 +70,23 @@ function like(i){
     
   })
   
+}
+function edit(e){
+  // Button that triggered the modal
+  const button = e.relatedTarget
+  // Extract info from data-bs-* attributes
+ const content=button.dataset.content;
+ const id=button.dataset.id;
+ if(!content){
+  document.querySelector('#modalId').value='';
+  exampleModal.querySelector('#postContent').value='';
+  return;
+ }
+
+ const modalBodyInput = exampleModal.querySelector('#postContent')
+ document.querySelector('#modalId').value=id
+ modalBodyInput.value=content
+
+
+
 }
