@@ -11,7 +11,7 @@ import json
 from .models import User,Post
 
 def index(request):
-    posts=Post.objects.all()
+    posts=Post.objects.all().order_by("-id")
     return render(request, "network/index.html",{"posts":posts})
 
 
@@ -82,4 +82,25 @@ def post(request):
     new.save()
 
     return JsonResponse({"message": "Created succesfully."}, status=201)
+
+@csrf_exempt
+@login_required
+def like(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    
+    data=json.loads(request.body);
+    postId=data.get("id","");
+    current_post=Post.objects.get(id=postId);
+
+
+    user_has_liked = current_post.likes.filter(id=request.user.id).exists()
+
+    if(user_has_liked):
+        current_post.likes.remove(request.user)
+    else:
+        current_post.likes.add(request.user)    
+    
+
+    return JsonResponse({"status": user_has_liked}, status=201)
 

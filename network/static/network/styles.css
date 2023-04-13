@@ -13,3 +13,19 @@
 .icon{
     font-size: 25px;
 }
+.fa-solid{
+    color: #ea0606 !important;
+}
+
+.likesContainer{
+    display: flex;
+   flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+
+.likesContainer p{
+    margin-right: 6px;
+    margin-bottom: 0;
+}

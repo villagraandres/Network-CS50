@@ -23,7 +23,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-primary" value="Post" >
+                <input type="submit" class="btn btn-primary" id="submitBtn" value="Post" >
             </div>
            
           </form>
@@ -41,8 +41,18 @@
           {% for post in posts  %}
             <div class="post  border mt-4 rounded shadow" style="width:40rem;">
               <h3>{{post.user}}</h3>
-              <p>{{post.content}}</p>
-              <i class="fa-regular fa-heart icon" style="color: #000000;"></i>
+              <p>{{post.content}}</p>  
+              {% if user.is_authenticated %}
+
+              <div class="likesContainer">
+                <p id="counter" >{{post.likes.all.count}}</p>
+               <i class="{% if request.user in post.likes.all  %}fa-solid {% else %} fa-regular {% endif %} fa-heart icon" data-id="{{post.id}}"   style="color: #000000;"></i>
+              </div>
+
+               {% endif %}
+             
+              
+            <p class="text-muted">{{post.date}}</p>  
           </div>
           {% endfor %}
           
