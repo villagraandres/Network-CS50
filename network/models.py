@@ -5,7 +5,8 @@ import pytz
 
 
 class User(AbstractUser):
-    pass
+     following = models.ManyToManyField('self', related_name='followers', symmetrical=False,blank=True)
+
 
 
 class Post(models.Model):

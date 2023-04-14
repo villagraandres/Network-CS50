@@ -38,4 +38,23 @@
     align-items: center;
     justify-content: center;
     margin-top: 50px;
+    
+}
+
+.follow{
+    display: inline-block;  
+    cursor: pointer;
+}
+
+.actions{
+    display: flex;
+    justify-content: space-evenly;
+}
+.actions p{
+    cursor: pointer;
+}
+
+.followers{
+    display: flex;
+    justify-content: space-evenly;
 }

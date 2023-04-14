@@ -1,11 +1,10 @@
 {% extends "network/layout.html" %}
 
 
-{% block activeAll %}active fw-bold{% endblock activeAll %}
 
 {% block body %}
     <div class="mt-4">
-        <h1 class="text-center">Feed</h1>
+
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" >New Post</button>
         
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -41,11 +40,19 @@
 
 
           {% for post in  page_obj  %}
-            <div class="post  border mt-4 rounded shadow" style="width:40rem;">           
+            <div class="post  border mt-4 rounded shadow" style="width:40rem;">          
+              {% if user.is_authenticated %}
+                 <a href="{% url 'profile' post.user.id %}"><h3>{{post.user}}</h3></a> 
+              {% else %}
                 <h3>{{post.user}}</h3>
+              {% endif %}
+               
                 {% if post.user == user %}
-                 <p class="link-primary m-0 editPost" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-content="{{post.content}}" data-id="{{post.id}}" >Edit</p>
-                {% endif %}
+                <div class="actions">
+                 <p class="link-primary m-0 editPost" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-content="{{post.content}}" data-id="{{post.id}}">Edit</p>
+                 <p class="link-danger m-0 editPost deleteBtn"  data-id="{{post.id}}">Delete</p>
+                </div>
+                 {% endif %}
                 
               <p>{{post.content}}</p>  
               {% if user.is_authenticated %}
@@ -100,9 +107,5 @@
     </div>
 {% endblock %}
 
-{% block js %}
-<script src="static/network/main.js"></script>
-
-{% endblock js %}
 
 

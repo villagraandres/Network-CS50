@@ -14,11 +14,11 @@ from .models import User,Post
 
 def index(request):
     posts=Post.objects.all().order_by("-id");
-    paginator=Paginator(posts,5);
+    paginator=Paginator(posts,10);
     page_number=request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    return render(request, "network/index.html",{"page_obj":page_obj})
+    return render(request, "network/index.html",{"page_obj":page_obj,"title":"Feed"})
 
 
 def login_view(request):
@@ -122,7 +122,58 @@ def like(request):
 
     return JsonResponse({"status": user_has_liked}, status=201)
 
+@login_required
+def following(request):
+    # Obtener los usuarios a los que sigue el usuario actual
+    following = request.user.following.all()
+    # Obtener los posts de los usuarios a los que sigue el usuario actual
+    posts = Post.objects.filter(user__in=following)
+    
+    
+    
+    paginator=Paginator(posts,10);
+    page_number=request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
-def listing(request):
-    pass
+    return render(request, "network/index.html",{"page_obj":page_obj,"title":"Following"})
+
+@login_required
+def profile(request,id):
+      profile=User.objects.get(id=id);
+      posts=profile.posts.all().order_by('-date')
+      paginator=Paginator(posts,10);
+      page_number=request.GET.get("page")
+      page_obj = paginator.get_page(page_number)
+      
+      return render(request, "network/profile.html",{"profile":profile,"page_obj":page_obj})
+
+@csrf_exempt
+@login_required
+def follow(request):
+    if request.method != 'POST':
+        return JsonResponse({'error':"Only POST request"},status=404)
+    data=json.loads(request.body);
+    userId=data.get("id","");
+    user=User.objects.get(id=userId);
+    
+    if user in request.user.following.all():
+        request.user.following.remove(user)
+        return JsonResponse({"message":"Unfollowed"})
+    else:
+        request.user.following.add(user)
+        return JsonResponse({"message":"Followed"})
+   
+@csrf_exempt
+@login_required
+def delete(request):
+     if request.method != 'POST':
+        return JsonResponse({'error':"Only POST request"},status=404)
+     data=json.loads(request.body)
+     postId=data.get("id","");
+     post=Post.objects.get(id=postId);
+     post.delete()   
+
+
+     return JsonResponse({"message":"deleted"})
+   
     

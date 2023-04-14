@@ -1,0 +1,127 @@
+{% extends 'network/layout.html' %}
+
+{% block body %}
+
+<div class="mt-4">
+
+
+  
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">New Post</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <form id="newPost">
+      <div class="mb-3">
+        <label for="message-text" class="col-form-label" >Content:</label>
+        <textarea class="form-control" id="postContent"></textarea>
+      </div>
+
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <input type="hidden" value="" id="modalId">
+          <input type="submit" class="btn btn-primary" id="submitBtn" value="Post" >
+      </div>
+     
+    </form>
+  </div>
+  
+</div>
+
+</div>
+</div>
+
+
+
+    
+    <div class="profile mt-4">
+        <h1 class="text-center">@{{profile}}</h1>
+        <div class="followers">
+          <p class="text-center"><span class="fw-bold text-primary">Followers: </span>{{profile.followers.all.count}}</p>
+          <p class="text-center"><span class="fw-bold text-primary">Following: </span>{{profile.following.all.count}}</p>
+        </div>
+        
+        {% if profile != user %}
+        <div class="text-center">
+          {% if profile in user.following.all %}
+            <p class="link-danger follow" id="follow">Unfollow</p>
+            {% else %}
+            <p class="link-primary follow" id="follow">Follow</p>
+          {% endif %}
+            
+        </div>
+           
+            <input type="hidden" value="{{profile.id}}" id="profileId">
+        {% endif %}
+
+        <h4>Posts:</h4>
+        
+     <section class="post-container mt-4">
+        {% for post in  page_obj  %}
+        <div class="post  border mt-4 rounded shadow" style="width:40rem;">           
+           <h3>{{post.user}}</h3>
+           {% if post.user == user %}
+                <div class="actions">
+                 <p class="link-primary m-0 editPost" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-content="{{post.content}}" data-id="{{post.id}}">Edit</p>
+                 <p class="link-danger m-0 editPost deleteBtn"  data-id="{{post.id}}">Delete</p>
+                </div>
+            {% endif %}
+          <p>{{post.content}}</p>  
+          {% if user.is_authenticated %}
+
+          <div class="likesContainer">
+            <p id="counter" >{{post.likes.all.count}}</p>
+           <i class="{% if request.user in post.likes.all  %}fa-solid {% else %} fa-regular {% endif %} fa-heart icon" data-id="{{post.id}}"   style="color: #000000;"></i>
+          </div>
+
+           {% endif %}
+              
+           <p class="text-muted">{{post.date}}</p>  
+        </div>
+        {% endfor %}
+
+    </section>   
+
+
+ <div class="bottom">
+    <nav aria-label="...">
+        <ul class="pagination">
+          {% if page_obj.has_previous %}
+          <li class="page-item ">
+            <a class="page-link" href="?page={{page_obj.previous_page_number}}">Previous</a>
+            {% endif %}
+              
+          </li>
+
+        {% for i in page_obj.paginator.page_range %}
+
+          {% if page_obj.number == i %}
+            <li class="page-item active" aria-current="page"><a class="page-link" href="?page={{ i }}">{{i}}</a></li>
+          {% else %}
+            <li class="page-item"><a class="page-link"  href="?page={{ i }}">{{i}}</a></li>
+          {% endif %}
+      {% endfor %}
+  
+      {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{page_obj.next_page_number}}">Next</a>
+          </li>
+        {% endif %}  
+        </ul>
+      </nav>
+  </div>
+</div>
+
+
+
+    </div>
+
+{% endblock body %}
+
+
+
+
+
